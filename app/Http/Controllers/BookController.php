@@ -6,6 +6,7 @@ use App\Book;
 use App\Author;
 use Illuminate\Http\Request;
 
+
 class BookController extends Controller
 {
     /**
@@ -20,32 +21,44 @@ class BookController extends Controller
         $authors = Author::all();
         $author_id = $request->author_id;
         $book_id = $request->book_id;
-        $paginatonsetting = 15;
-        if(!$paginatonsetting) {
-            $paginatonsetting = 15;
-        }
-        //FILTRAVIMAS
 
+        //FILTRAVIMAS
         if($author_id) {
                 if($author_id == "all") {
-                    $books = Book::all()->sort()->paginate(10);
+                    $books = Book::sortable()->paginate(10);
+
+                    //Apacioje pavaizduota, jeigu reikia prijungti ir sortinima su selectais.
+                    // $sortedResult = $books->getCollection()->sortBy('id')->values();
+                    // $books->setCollection($sortedResult);
                 }
                 else {
-                $books = Book::query()->where("author_id", $author_id)->paginate(10);
+                $books = Book::query()->where("author_id", $author_id)->sortable()->paginate(10);
                 }
-         }  else if($book_id) {
 
-            if($book_id == "all") {
-                $books = Book::all()->sort()->paginate(10);
-            }
-            else {
-            $books = Book::query()->where("id", $book_id)->paginate(10);
-            }
-        } else {
-            $books = Book::all()->sort()->paginate(10);
-        }
+                }
+                else if($book_id) {
+                    if($book_id == "all") {
+                        $books = Book::sortable()->paginate(10);
+                        //Apacioje pavaizduota, jeigu reikia prijungti ir sortinima su selectais.
+                    // $sortedResult = $books->getCollection()->sortBy('id')->values();
+                    // $books->setCollection($sortedResult);
+                }
+                else {
+                $books = Book::query()->where("id", $book_id)->sortable()->paginate(10);
+                }
+                    } else {
 
-        return view("book.index", ["book" => $book, "books" => $books, "authors" =>$authors, "author_id"=> $author_id, "book_id"=> $book_id, "booksFilter" => $books_filter]);
+                        $books = Book::sortable()->paginate(10);
+
+                        // $books = Book::orderBy('id', 'desc')->paginate(10);
+                        //Apacioje pavaizduota, jeigu reikia prijungti ir sortinima su selectais.
+                        // $sortedResult = $books->getCollection()->sortBy('id')->values();
+                        // $books->setCollection($sortedResult);
+                }
+
+
+    // $books = Book::sortable()->paginate(10);
+    return view("book.index", ["book" => $book, "books" => $books, "authors" =>$authors, "author_id"=> $author_id, "book_id"=> $book_id, "booksFilter" => $books_filter]);
 
     }
 
@@ -106,7 +119,7 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        //
+        return view('book.show', ["book"=>$book]);
     }
 
     /**
@@ -117,7 +130,11 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        //
+        $authors = Author::all();
+
+
+
+        return view("book.edit", ["authors" => $authors, "book"=>$book]);
     }
 
     /**
@@ -129,7 +146,27 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        //
+        $authors = Author::all();
+        $authors_count = $authors->count();
+
+        $validateVar = $request->validate([
+            'book_title' => 'required|regex:/^[\pL\s]+$/u|min:6|max:225',
+            'book_about' => 'required|max:1500',
+            'book_isbn' => 'required|numeric',
+            'book_author' => 'required|numeric|gt:0|lte:'.$authors_count,
+            'book_pages' => 'required|numeric|gt:0'
+
+        ]);
+
+        $book->title = $request->book_title;
+        $book->about = $request->book_about;
+        $book->author_id = $request->book_author;
+        $book->pages = $request->book_pages;
+        $book->isbn = $request->book_isbn;
+
+
+        $book->save();
+        return redirect()->route("book.index");
     }
 
     /**
@@ -140,6 +177,7 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        //
+        $book->delete();
+        return redirect()->route("book.index")->with('sucess_message','Book deleted');
     }
 }

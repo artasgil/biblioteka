@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-
 @section('content')
-    <div class="container">
 
+    <div class="container">
         <div class="form-row">
-            <div class="form-group col">
+            <div class="form-group">
             <a href="{{route('book.create')}}" class="btn btn-success">Add book</a>
             </div>
         </div>
         <form action="{{ route('book.index') }}" method="GET">
             @csrf
             <div class="form-row">
+                <label for="author_id" class="col-form-label text-md-right">{{ __('Filter by author name: ') }}</label>
                 <div class="form-group col-md-2">
                     <select class="form-control" name="author_id">
                         <option value="all" @if ($author_id == 'all') selected @endif > Visi </option>
@@ -27,6 +27,7 @@
         </form>
         <form action="{{ route('book.index') }}" method="GET">
             <div class="form-row">
+                <label for="book_id" class="col-form-label text-md-right">{{ __('Filter by book name: ') }}</label>
                 <div class="form-group col-md-2">
                     <select class="form-control" name="book_id">
                         <option value="all" @if ($book_id == 'all') selected @endif > Visi </option>
@@ -40,27 +41,23 @@
                     </div>
             </div>
         </form>
+        <div class="form-group">
+            <a href="{{route('book.index')}}" class="btn btn-dark">Clear filter</a>
+        </div>
 
 
 
         <table class="table table-striped">
-
             <tr>
-                <th> ID </th>
-                <th> Title </th>
-                <th> Isbn </th>
-                <th> Pages </th>
-                <th> About </th>
-                <th> Author name </th>
+                <th width="80px"> @sortablelink('id','ID') </th>
+                <th width="150px"> @sortablelink('title','Title') </th>
+                <th> @sortablelink('isbn','Isbn') </th>
+                <th width="80px"> @sortablelink('pages','Pages') </th>
+                <th> @sortablelink('about','About') </th>
+                <th width="210px"> @sortablelink('author_id','Author name') </th>
                 <th> Action </th>
-
                 <th> Delete </th>
-
-
-
-
             </tr>
-
             @foreach ($books as $book)
                 <tr>
                     <td>{{ $book->id }} </td>
@@ -77,21 +74,19 @@
                         <td>
                         <form method="post" action={{ route('book.destroy', [$book]) }}>
                             @csrf
+                            <div class="form-row">
+                                <div class="form-group col">
                             <button type="submit" class="btn btn-danger">DELETE</button>
                         </form>
-                        <td>
                     </td>
+                </tr>
             @endforeach
         </table>
 
-
         {{-- {{$book->links()}} --}}
 
-        @if ($paginatonsettingg != 1)
             {!! $books->appends(Request::except('page'))->render() !!}
-@endif
+        </div>
 
 
-
-    </div>
 @endsection
