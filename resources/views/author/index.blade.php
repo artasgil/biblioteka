@@ -3,13 +3,23 @@
 @section('content')
 
     <div class="container">
+        @if(session()->has('error_message'))
+    <div class="alert alert-danger">
+    {{session()->get("error_message")}}
+    </div>
+    @endif
+
+    @if(session()->has('sucess_message'))
+    <div class="alert alert-success">
+    {{session()->get("sucess_message")}}
+    </div>
+    @endif
+
         <div class="form-row">
             <div class="form-group">
             <a href="{{route('author.create')}}" class="btn btn-success">Add author</a>
             </div>
         </div>
-
-
         <table class="table table-striped">
             <tr>
                 <th width="80px"> @sortablelink('id','ID') </th>
@@ -18,12 +28,22 @@
                 <th> Action </th>
                 <th> Delete </th>
             </tr>
+{{--
+            @foreach ($authorss as $author)
+
+            {{$authors->books_count}}
+
+            @endforeach --}}
+
 
             @foreach ($authors as $author)
                 <tr>
                     <td>{{ $author->id }} </td>
                     <td>{{ $author->name }} </td>
                     <td>{{ $author->surname }} </td>
+
+
+
                     <td>
                         <div class="btn-group-vertical">
                             <a href="{{ route('author.show', [$author]) }}" class="btn btn-secondary">Show </a>
@@ -41,7 +61,7 @@
             @endforeach
         </table>
 
-        {{-- {{$book->links()}} --}}
+        {{-- {{$authors->links()}} --}}
 
             {!! $authors->appends(Request::except('page'))->render() !!}
         </div>
