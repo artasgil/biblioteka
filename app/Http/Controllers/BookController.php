@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Book;
 use App\Author;
+use PDF;
 use Illuminate\Http\Request;
 
 
@@ -21,6 +22,13 @@ class BookController extends Controller
         $authors = Author::all();
         $author_id = $request->author_id;
         $book_id = $request->book_id;
+
+        //REQUESTAI PDF FAILO SORTINIMUI
+        $sort = $request->sort;
+        $direction = $request->direction;
+
+        //???????????????????????KODEL SITO NEBEREIKIA ATVAIZDUOTI I VIEW??????????????????????
+        // $authorid = $request->authorid;
 
         //FILTRAVIMAS
         if($author_id) {
@@ -58,7 +66,7 @@ class BookController extends Controller
 
 
     // $books = Book::sortable()->paginate(10);
-    return view("book.index", ["book" => $book, "books" => $books, "authors" =>$authors, "author_id"=> $author_id, "book_id"=> $book_id, "booksFilter" => $books_filter]);
+    return view("book.index", ["book" => $book, "books" => $books, "authors" =>$authors, "author_id"=> $author_id, "book_id"=> $book_id, "booksFilter" => $books_filter, 'sort' => $sort, 'direction' => $direction]);
 
     }
 
@@ -179,5 +187,57 @@ class BookController extends Controller
     {
         $book->delete();
         return redirect()->route("book.index")->with('sucess_message','Book deleted');
+    }
+
+    public function generateBook(Book $book)
+    {
+        view()->share('book', $book);
+
+        $pdf = PDF::loadView("pdf_book_template", $book);
+        return $pdf->download("book".$book->id.".pdf");
+
+    }
+
+    public function generatePDF(Request $request)
+    {
+        // $books = Book::all();
+
+        $sortby=$request->sort;
+        $collumnName = $request->direction;
+
+
+        //???????????KODEL CIA JAU GALIU PASIIMTI TIESIOGIAI NE PER INDEX LANGA, O NEREIKIA ATVAIZDUOTI PAPILDOMAI INDEX KONTROLERYJE????????????????
+        $author_id = $request->authorid;
+        $book_id = $request->bookid;
+
+    if(empty($collumnName) && empty($sortby)) {
+            $sortby = 'id';
+            $collumnName = 'asc';
+        }
+
+        //???????KA DUOTI PATS PIRMAS IF'as?????????
+    if($author_id) {
+        if($author_id == "all") {
+            $books = Book::orderBy($sortby, $collumnName)->get();
+        }
+        else {
+            $books = Book::orderBy($sortby, $collumnName)->where("author_id", $author_id)->get();
+        }
+    }
+
+    else if($book_id) {
+            if($book_id == "all") {
+                $books = Book::orderBy($sortby, $collumnName)->get();
+        }
+        else {
+            $books = Book::orderBy($sortby, $collumnName)->where("id", $book_id)->get();
+        }
+    }
+
+        view()->share(['books'=> $books]);
+
+        $pdf = PDF::loadView("pdf_books_template", $books);
+        return $pdf->download("books.pdf");
+
     }
 }

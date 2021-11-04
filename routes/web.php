@@ -26,6 +26,10 @@ Route::prefix('book')->group(function () {
     Route::post('update/{book}', 'BookController@update')->name('book.update')->middleware("auth");
     Route::post('delete/{book}', 'BookController@destroy')->name('book.destroy')->middleware("auth");
     Route::get('show/{book}', 'BookController@show')->name('book.show')->middleware("auth");
+    Route::get('/pdf{book}','BookController@generateBook')->name('book.pdf')->middleware("auth");
+    Route::get('/pdf','BookController@generatePDF')->name('books.pdf')->middleware("auth");
+
+
 
 
 
@@ -40,6 +44,9 @@ Route::prefix('author')->group(function () {
     Route::post('update/{author}', 'AuthorController@update')->name('author.update')->middleware("auth");
     Route::post('delete/{author}', 'AuthorController@destroy' )->name('author.destroy')->middleware("auth");
     Route::get('show/{author}', 'AuthorController@show')->name('author.show')->middleware("auth");
+    Route::get('/pdf{author}','AuthorController@generateAuthor')->name('author.pdf')->middleware("auth");
+    Route::get('/pdf','AuthorController@generatePDF')->name('authors.pdf')->middleware("auth");
+
 
 });
 

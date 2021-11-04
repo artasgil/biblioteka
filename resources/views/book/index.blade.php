@@ -44,6 +44,18 @@
         <div class="form-group">
             <a href="{{route('book.index')}}" class="btn btn-dark">Clear filter</a>
         </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <form method="get" action="{{route('books.pdf')}}">
+                    <input style="display:none" name="sort" value='{{$sort}}'  />
+                    <input style="display:none" name="direction" value='{{ $direction }}' />
+                    <input style="display:none" name="authorid" value='{{ $author_id }}' />
+                    <input style="display:none" name="bookid" value='{{ $book_id }}' />
+
+                    <button class="btn btn-dark" >Export filtered and sorted Books table to pdf </button>
+                </form>
+            </div>
+        </div>
 
 
 
@@ -70,6 +82,7 @@
                         <div class="btn-group-vertical">
                             <a href="{{ route('book.show', [$book]) }}" class="btn btn-secondary">Show </a>
                             <a href="{{ route('book.edit', [$book]) }}" class="btn btn-primary">Edit </a>
+                            <a class="btn btn-dark" href="{{route('book.pdf', [$book])}}">Export book</a>
                         </div>
                         <td>
                         <form method="post" action={{ route('book.destroy', [$book]) }}>
