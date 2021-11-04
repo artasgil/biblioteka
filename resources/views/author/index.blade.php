@@ -25,22 +25,17 @@
                 <th width="80px"> @sortablelink('id','ID') </th>
                 <th width="150px"> @sortablelink('name','Name') </th>
                 <th> @sortablelink('surname','Surname') </th>
+                <th> Total books </th>
                 <th> Action </th>
                 <th> Delete </th>
             </tr>
-{{--
-            @foreach ($authorss as $author)
-
-            {{$authors->books_count}}
-
-            @endforeach --}}
-
 
             @foreach ($authors as $author)
                 <tr>
                     <td>{{ $author->id }} </td>
                     <td>{{ $author->name }} </td>
                     <td>{{ $author->surname }} </td>
+                    <td>{{ $author->authorAll->count() }} </td>
 
 
 
@@ -64,6 +59,7 @@
         {{-- {{$authors->links()}} --}}
 
             {!! $authors->appends(Request::except('page'))->render() !!}
+
         </div>
 
 

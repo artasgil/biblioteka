@@ -7,9 +7,7 @@ use Kyslik\ColumnSortable\Sortable;
 
 class Author extends Model
 {
-    public function authorAll() {
-        return $this->hasMany(Book::class,'author_id', 'id');
-    }
+
 
     use Sortable;
     protected $table="authors";
@@ -17,4 +15,8 @@ class Author extends Model
     protected $fillable = ["name", "surname"];
 
     public $sortable = ["id", "name", "surname"];
+
+    public function authorAll() {
+        return $this->hasMany(Book::class,'author_id', 'id');
+    }
 }

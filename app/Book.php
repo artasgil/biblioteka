@@ -11,6 +11,7 @@ class Book extends Model
     public function bookAuthor() {
         return $this->belongsTo(Author::class,'author_id', 'id');
     }
+
     use Sortable;
     protected $table="books";
 
