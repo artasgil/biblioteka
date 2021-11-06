@@ -215,7 +215,6 @@ class BookController extends Controller
             $collumnName = 'asc';
         }
 
-        //???????KA DUOTI PATS PIRMAS IF'as?????????
     if($author_id) {
         if($author_id == "all") {
             $books = Book::orderBy($sortby, $collumnName)->get();
